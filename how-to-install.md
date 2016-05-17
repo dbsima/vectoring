@@ -1,4 +1,11 @@
 # Engine
+
+## potrace (http://potrace.sourceforge.net/)
+sudo apt-get install potrace
+
+## convert (http://www.imagemagick.org/script/index.php)
+sudo apt-get install imagemagick
+
 ## SimpleCV
 
 cd ~/vectoring/engine/libs/
