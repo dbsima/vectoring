@@ -38,6 +38,10 @@ def copy(in_full_path):
     return out_full_path
 
 
+def clear_output_dir():
+    os.system('rm -rf %s/*.* ' % OUTPUT_DIR)
+
+
 def remove_intermediates():
     os.system('find %s -name "*.pnm" -type f -delete' % OUTPUT_DIR)
 
@@ -90,6 +94,9 @@ def send_files_to_processor():
     list_of_images = get_files(INPUT_DIR)
     for in_full_path in list_of_images:
 
+        # remove already generated assets
+        clear_output_dir()
+        # generate assets
         cpy_full_path = copy(in_full_path)
         compute_1(cpy_full_path)
         compute_2(cpy_full_path)
