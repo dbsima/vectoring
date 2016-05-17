@@ -91,12 +91,13 @@ def compute_2(cpy_full_path):
 
 
 def send_files_to_processor():
+    # remove already generated assets
+    clear_output_dir()
+
+    # generate assets
     list_of_images = get_files(INPUT_DIR)
     for in_full_path in list_of_images:
 
-        # remove already generated assets
-        clear_output_dir()
-        # generate assets
         cpy_full_path = copy(in_full_path)
         compute_1(cpy_full_path)
         compute_2(cpy_full_path)
