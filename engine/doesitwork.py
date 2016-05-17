@@ -31,8 +31,8 @@ def edgify(in_full_path):
 
 
 def copy(in_full_path):
-    extension = os.path.splitext(in_full_path)[1]
-    new_file_name = get_random_string() + extension
+    (root, ext) = os.path.splitext(in_full_path)
+    new_file_name = get_random_string() + ext
     out_full_path = os.sep.join([OUTPUT_DIR, new_file_name])
     os.system("cp %s %s" % (in_full_path, out_full_path))
     return out_full_path
