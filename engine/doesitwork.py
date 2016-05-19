@@ -2,6 +2,7 @@ import os
 import imghdr
 import string
 import random
+import numpy
 
 from SimpleCV import Image
 
@@ -19,7 +20,8 @@ OPTIONS = {
     #'--unit': random.sample(xrange(10, 100), 5), # 10
     #'--debug': [1, 2, 3],
     #'--width': [1024],
-    '--tight': None,
+    '--invert': None,
+    '--blacklevel': numpy.arange(0, 1.1, 0.1)
 }
 
 def get_random_string(length=16):
