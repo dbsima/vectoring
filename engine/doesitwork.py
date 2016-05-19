@@ -11,6 +11,16 @@ OUTPUT_DIR = os.sep.join([PATH_TO_PROJECT, 'engine/out'])
 TMP_DIR = '/tmp'
 ALLOWED_IMAGE_FILE_FORMATS = ['png', 'jpeg']
 
+OPTIONS = {
+    ##'turnpolicy': ['black', 'white', 'right', 'left', 'minority', 'majority', 'random'],
+    #'--turdsize': random.sample(xrange(30), 5), # 2
+    #'--alphamax': [0.0, 0.5, 1.0, 1.3334], # 1.0
+    #'--longcurve': None,
+    #'--unit': random.sample(xrange(10, 100), 5), # 10
+    #'--debug': [1, 2, 3],
+    #'--width': [1024],
+    '--tight': None,
+}
 
 def get_random_string(length=16):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
@@ -58,10 +68,16 @@ def to_pnm(in_full_path, out_full_path=None):
     return out_full_path
 
 
-def to_svg(in_full_path):
+def to_svg(in_full_path, algorithm_options=''):
     (root, ext) = os.path.splitext(in_full_path)
-    out_full_path = root + '_svg.svg'
-    os.system("potrace -s -o %s %s" % (out_full_path, in_full_path))
+    out_full_path = root + algorithm_options.replace(' ', '_') + '.svg'
+    command = "potrace -s -o {out_full_path} {in_full_path} {algorithm_options} --tight".format(
+        out_full_path=out_full_path,
+        in_full_path=in_full_path,
+        algorithm_options=algorithm_options
+    )
+    print 'executing', command
+    os.system(command)
 
     copy(out_full_path, OUTPUT_DIR)
     return out_full_path
@@ -95,6 +111,12 @@ def compute_2(pnm_full_path):
     return svg_full_path
 
 
+def compute_3(pnm_full_path):
+    # .{png,jpeg} -> pnm
+    svg_full_path = to_svg(pnm_full_path)
+    return svg_full_path
+
+
 def send_files_to_processor():
     # remove old assets
     clear_dir(TMP_DIR)
@@ -104,13 +126,25 @@ def send_files_to_processor():
     for in_full_path in list_of_images:
 
         (root, ext) = os.path.splitext(in_full_path)
-        new_file_name = get_random_string() + '_pnm.pnm'
+        new_file_name = get_random_string() + '.pnm'
         out_full_path = os.sep.join([TMP_DIR, new_file_name])
 
         pnm_full_path = to_pnm(in_full_path, out_full_path)
         copy(pnm_full_path, OUTPUT_DIR)
-        compute_1(pnm_full_path)
-        compute_2(pnm_full_path)
+        for option in OPTIONS:
+            values = OPTIONS[option]
+            if values is None:
+                algorithm_option = '{option}'.format(
+                    option=option,
+                )
+                svg_full_path = to_svg(pnm_full_path, algorithm_option)
+            else:
+                for value in values:
+                    algorithm_option = '{option} {value}'.format(
+                        option=option,
+                        value=value
+                    )
+                    svg_full_path = to_svg(pnm_full_path, algorithm_option)
 
         #remove_intermediates()
 
