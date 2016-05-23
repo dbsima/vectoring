@@ -12,19 +12,6 @@ var Navbar = ReactBootstrap.Navbar,
     FormControl = ReactBootstrap.FormControl;
 
 
-var UploadFileForm = React.createClass({
-    render: function() {
-        return (
-            <form className="upload-file">
-                <FormGroup>
-                    <FormControl type="file" bsClass="form-control" />
-                </FormGroup>
-                <Button type="submit">Upload</Button>
-            </form>
-        );
-    }
-});
-
 var NavbarClass = React.createClass({
     render: function() {
         return (
@@ -34,11 +21,6 @@ var NavbarClass = React.createClass({
                         <a href="#">designai</a>
                     </Navbar.Brand>
                 </Navbar.Header>
-                <Navbar.Collapse>
-                    <Navbar.Form pullLeft>
-                        <UploadFileForm />
-                    </Navbar.Form>
-                </Navbar.Collapse>
             </Navbar>
         );
     }
