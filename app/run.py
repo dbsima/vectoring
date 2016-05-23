@@ -1,9 +1,9 @@
+import os
 from flask import Flask
-app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return "Hello World!"
+app = Flask(__name__, static_url_path='', static_folder='public')
+app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 
-if __name__ == "__main__":
-    app.run()
+
+if __name__ == '__main__':
+    app.run(port=int(os.environ.get("PORT", 3000)), debug=True)
