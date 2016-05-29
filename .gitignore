@@ -1,3 +1,4 @@
 *.pyc
 engine/out
 venv
+node_modules
