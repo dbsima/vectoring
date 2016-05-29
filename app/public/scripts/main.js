@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
-var Dropzone = require('react-dropzone');
+var ReactDropzone = require('react-dropzone');
 
 var Navbar = ReactBootstrap.Navbar,
     Nav = ReactBootstrap.Nav,
@@ -113,6 +113,31 @@ var SidebarClass = React.createClass({
     }
 });
 
+var Dropzone = React.createClass({
+    getInitialState: function () {
+        return {
+            files: []
+        };
+    },
+    onDrop: function (files) {
+        this.setState({
+            files: files
+        });
+    },
+    render: function () {
+        return (
+            <div>
+                <ReactDropzone onDrop={this.onDrop} multiple={false} className="dropzone" accept="image/jpeg, image/png" >
+                    <div className="text-center">Drop your image here, or click to select the image to upload.</div>
+                </ReactDropzone>
+                {this.state.files.length > 0 ?
+                    <div>
+                        <div>{this.state.files.map((file, key) => <img className="image center" key={key} src={file.preview} /> )}</div>
+                    </div> : null}
+            </div>
+        );
+    }
+});
 
 var GridClass = React.createClass({
     render: function() {
@@ -123,6 +148,7 @@ var GridClass = React.createClass({
                         <SidebarClass />
                      </Col>
                      <Col md={8}>
+                        <Dropzone />
                      </Col>
                 </Row>
             </Grid>
