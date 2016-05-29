@@ -342,7 +342,7 @@
 	            null,
 	            React.createElement(
 	                ReactDropzone,
-	                { onDrop: this.onDrop, multiple: false, className: 'dropzone', accept: 'image/jpeg, image/png' },
+	                { onDrop: this.onDrop, multiple: false, className: 'dropzone', accept: 'image/jpeg, image/png, image/svg+xml' },
 	                React.createElement(
 	                    'div',
 	                    { className: 'text-center' },

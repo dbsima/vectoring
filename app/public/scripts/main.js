@@ -127,7 +127,7 @@ var Dropzone = React.createClass({
     render: function () {
         return (
             <div>
-                <ReactDropzone onDrop={this.onDrop} multiple={false} className="dropzone" accept="image/jpeg, image/png" >
+                <ReactDropzone onDrop={this.onDrop} multiple={false} className="dropzone" accept="image/jpeg, image/png, image/svg+xml" >
                     <div className="text-center">Drop your image here, or click to select the image to upload.</div>
                 </ReactDropzone>
                 {this.state.files.length > 0 ?
