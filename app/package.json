@@ -1,0 +1,19 @@
+{
+  "name": "designai",
+  "version": "0.0.1",
+  "description": "design AI",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "babel-preset-react": "^6.5.0",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-dropzone": "^3.4.0",
+    "webpack": "^1.13.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bogdan Sima",
+  "license": "MIT"
+}
