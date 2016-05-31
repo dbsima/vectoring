@@ -132,7 +132,7 @@ var Dropzone = React.createClass({
                 </ReactDropzone>
                 {this.state.files.length > 0 ?
                     <div>
-                        <div>{this.state.files.map((file, key) => <img className="image center" key={key} src={file.preview} /> )}</div>
+                        <div>{this.state.files.map((file, key) => <object type="image/svg+xml" key={key} data={file.preview} ></object> )}</div>
                     </div> : null}
             </div>
         );
