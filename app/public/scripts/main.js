@@ -113,29 +113,67 @@ var SidebarClass = React.createClass({
     }
 });
 
+var SVG = React.createClass({
+    // render static SVG
+    // TODO: can I avoid using this.props.svg ?!
+    render: function() {
+        console.log('render SVG');
+        return (
+            <div className="svg" dangerouslySetInnerHTML={{ __html: this.props.svg }} />
+        );
+    }
+});
+
 var Dropzone = React.createClass({
     getInitialState: function () {
         return {
-            files: []
+            file: [],
+            file_content: ''
         };
     },
     onDrop: function (files) {
         this.setState({
-            files: files
+            file: files[0],
+        });
+
+        // Upload file
+        var fd = new FormData();    
+        fd.append('file', files[0]);
+        $.ajax({
+            url: '/api/1.0/files/upload',
+            data: fd,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function(data){
+                console.log(data);
+                // TODO: check success status
+                this.setState({
+                    file_content: data['data']
+                });
+            }.bind(this),                                                
+            error: function(xhr, status, err) {                                                                                           
+                console.error(status);   
+            }.bind(this)
         });
     },
     render: function () {
+        console.log('render Dropzone');
         return (
             <div>
                 <ReactDropzone onDrop={this.onDrop} multiple={false} className="dropzone" accept="image/jpeg, image/png, image/svg+xml" >
                     <div className="text-center">Drop your image here, or click to select the image to upload.</div>
                 </ReactDropzone>
-                {this.state.files.length > 0 ?
-                    <div>
-                        <div>{this.state.files.map((file, key) => <object type="image/svg+xml" key={key} data={file.preview} ></object> )}</div>
-                    </div> : null}
+
+                <SVG svg={this.state.file_content} />
             </div>
         );
+    },
+    componentDidUpdate: function() {
+        // TODO: we have the rendered SVG. We can now play with it.
+        console.log('Dropzone - componentDidUpdate');
+        var svg = document.getElementsByTagName('svg');
+        console.log(svg);
     }
 });
 

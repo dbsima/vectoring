@@ -18,10 +18,9 @@ OPTIONS = {
     #'--alphamax': [0.0, 0.5, 1.0, 1.3334], # 1.0
     #'--longcurve': None,
     #'--unit': random.sample(xrange(10, 100), 5), # 10
-    #'--debug': [1, 2, 3],
-    #'--width': [1024],
+    '--debug': [1, 2, 3],
     '--invert': None,
-    '--blacklevel': numpy.arange(0, 1.1, 0.1)
+    #'--blacklevel': numpy.arange(0, 1.1, 0.1)
 }
 
 def get_random_string(length=16):
@@ -73,7 +72,7 @@ def to_pnm(in_full_path, out_full_path=None):
 def to_svg(in_full_path, algorithm_options=''):
     (root, ext) = os.path.splitext(in_full_path)
     out_full_path = root + algorithm_options.replace(' ', '_') + '.svg'
-    command = "potrace -s -o {out_full_path} {in_full_path} {algorithm_options} --tight".format(
+    command = "potrace -s -o {out_full_path} {in_full_path} {algorithm_options} --tight --width 384pt".format(
         out_full_path=out_full_path,
         in_full_path=in_full_path,
         algorithm_options=algorithm_options

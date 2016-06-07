@@ -323,20 +323,54 @@
 	    }
 	});
 
+	var SVG = React.createClass({
+	    displayName: 'SVG',
+
+	    // render static SVG
+	    // TODO: can I avoid using this.props.svg ?!
+	    render: function render() {
+	        console.log('render SVG');
+	        return React.createElement('div', { className: 'svg', dangerouslySetInnerHTML: { __html: this.props.svg } });
+	    }
+	});
+
 	var Dropzone = React.createClass({
 	    displayName: 'Dropzone',
 
 	    getInitialState: function getInitialState() {
 	        return {
-	            files: []
+	            file: [],
+	            file_content: ''
 	        };
 	    },
 	    onDrop: function onDrop(files) {
 	        this.setState({
-	            files: files
+	            file: files[0]
+	        });
+
+	        // Upload file
+	        var fd = new FormData();
+	        fd.append('file', files[0]);
+	        $.ajax({
+	            url: '/api/1.0/files/upload',
+	            data: fd,
+	            processData: false,
+	            contentType: false,
+	            type: 'POST',
+	            success: function (data) {
+	                console.log(data);
+	                // TODO: check success status
+	                this.setState({
+	                    file_content: data['data']
+	                });
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error(status);
+	            }.bind(this)
 	        });
 	    },
 	    render: function render() {
+	        console.log('render Dropzone');
 	        return React.createElement(
 	            'div',
 	            null,
@@ -349,18 +383,14 @@
 	                    'Drop your image here, or click to select the image to upload.'
 	                )
 	            ),
-	            this.state.files.length > 0 ? React.createElement(
-	                'div',
-	                null,
-	                React.createElement(
-	                    'div',
-	                    null,
-	                    this.state.files.map(function (file, key) {
-	                        return React.createElement('img', { className: 'image center', key: key, src: file.preview });
-	                    })
-	                )
-	            ) : null
+	            React.createElement(SVG, { svg: this.state.file_content })
 	        );
+	    },
+	    componentDidUpdate: function componentDidUpdate() {
+	        // TODO: we have the rendered SVG. We can now play with it.
+	        console.log('Dropzone - componentDidUpdate');
+	        var svg = document.getElementsByTagName('svg');
+	        console.log(svg);
 	    }
 	});
 
