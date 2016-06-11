@@ -1,3 +1,16 @@
+# web app
+
+## Install Node.js v6
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+## Install npm
+curl -L https://www.npmjs.com/install.sh | sh
+
+## Install webpack
+npm install webpack -g
+
+
 # vectoring
 
 Play with vectorized B&W images.
@@ -25,5 +38,13 @@ that are not that bad. (An interesting problem could how to 'guess' the
 * Milestone #1: 10-20 commmits a day.
 
 
+# Docs
+
+## React
+https://facebook.github.io/react/docs/component-specs.html
+https://github.com/okonet/react-dropzone
+
+## SVG
+https://www.w3.org/TR/SVG/paths.html
 
 
