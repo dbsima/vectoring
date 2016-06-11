@@ -16,6 +16,13 @@ def allowed_file(filename):
 
 @app.route('/api/1.0/files/upload', methods=['POST'])
 def upload_file():
+    """
+    Returns a json with 3 values:
+
+    success (bool)
+    message (None or string)
+    data (None or string)
+    """
     if request.method == 'POST':
         file = request.files.get('file', None)
         if not file or file.filename == '':
@@ -43,7 +50,12 @@ def upload_file():
             message = 'File type not supported. Please use one of the following extensions: {0}'.format(", ".join(ALLOWED_EXTENSIONS)),
             data = None
         )
-    # method not allowed
+
+    return jsonify(
+        success = False,
+        message = 'Method not allowed',
+        data = None
+    )
 
 
 if __name__ == '__main__':
