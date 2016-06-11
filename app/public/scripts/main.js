@@ -13,6 +13,7 @@ var Navbar = ReactBootstrap.Navbar,
     Col = ReactBootstrap.Col,
     Thumbnail = ReactBootstrap.Thumbnail,
     Button = ReactBootstrap.Button,
+    Alert = ReactBootstrap.Alert,
     FormGroup = ReactBootstrap.FormGroup,
     FormControl = ReactBootstrap.FormControl;
 
@@ -124,11 +125,40 @@ var SVG = React.createClass({
     }
 });
 
+const AlertDismissable = React.createClass({
+    getInitialState() {
+        return {
+            alertVisible: true
+        };
+    },
+
+    render() {
+        if (this.state.alertVisible && this.props.message != '') {
+            return (
+                <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
+                    <p>{this.props.message}</p>
+                </Alert>
+            );
+        } else {
+            return null;
+        }
+  },
+
+    handleAlertDismiss() {
+        this.setState({alertVisible: false});
+    },
+
+    handleAlertShow() {
+        this.setState({alertVisible: true});
+    }
+});
+
 var Dropzone = React.createClass({
     getInitialState: function () {
         return {
             file: [],
-            file_content: ''
+            file_content: '',
+            alert_message: '',
         };
     },
     onDrop: function (files) {
@@ -148,9 +178,16 @@ var Dropzone = React.createClass({
             success: function(data){
                 console.log(data);
                 // TODO: check success status
-                this.setState({
-                    file_content: data['data']
-                });
+                if (data['success'] === true) {
+                    this.setState({
+                        file_content: data['data'],
+                        alert_message: '',
+                    });
+                } else {
+                    this.setState({
+                        alert_message: data['message']
+                    });
+                }
             }.bind(this),                                                
             error: function(xhr, status, err) {                                                                                           
                 console.error(status);   
@@ -161,6 +198,8 @@ var Dropzone = React.createClass({
         console.log('render Dropzone');
         return (
             <div>
+                <AlertDismissable message={this.state.alert_message}/>
+
                 <ReactDropzone onDrop={this.onDrop} multiple={false} className="dropzone" accept="image/jpeg, image/png, image/svg+xml" >
                     <div className="text-center">Drop your image here, or click to select the image to upload.</div>
                 </ReactDropzone>

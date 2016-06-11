@@ -61,6 +61,7 @@
 	    Col = ReactBootstrap.Col,
 	    Thumbnail = ReactBootstrap.Thumbnail,
 	    Button = ReactBootstrap.Button,
+	    Alert = ReactBootstrap.Alert,
 	    FormGroup = ReactBootstrap.FormGroup,
 	    FormControl = ReactBootstrap.FormControl;
 
@@ -334,13 +335,44 @@
 	    }
 	});
 
+	var AlertDismissable = React.createClass({
+	    displayName: 'AlertDismissable',
+	    getInitialState: function getInitialState() {
+	        return {
+	            alertVisible: true
+	        };
+	    },
+	    render: function render() {
+	        if (this.state.alertVisible && this.props.message != '') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'danger', onDismiss: this.handleAlertDismiss },
+	                React.createElement(
+	                    'p',
+	                    null,
+	                    this.props.message
+	                )
+	            );
+	        } else {
+	            return null;
+	        }
+	    },
+	    handleAlertDismiss: function handleAlertDismiss() {
+	        this.setState({ alertVisible: false });
+	    },
+	    handleAlertShow: function handleAlertShow() {
+	        this.setState({ alertVisible: true });
+	    }
+	});
+
 	var Dropzone = React.createClass({
 	    displayName: 'Dropzone',
 
 	    getInitialState: function getInitialState() {
 	        return {
 	            file: [],
-	            file_content: ''
+	            file_content: '',
+	            alert_message: ''
 	        };
 	    },
 	    onDrop: function onDrop(files) {
@@ -360,9 +392,16 @@
 	            success: function (data) {
 	                console.log(data);
 	                // TODO: check success status
-	                this.setState({
-	                    file_content: data['data']
-	                });
+	                if (data['success'] === true) {
+	                    this.setState({
+	                        file_content: data['data'],
+	                        alert_message: ''
+	                    });
+	                } else {
+	                    this.setState({
+	                        alert_message: data['message']
+	                    });
+	                }
 	            }.bind(this),
 	            error: function (xhr, status, err) {
 	                console.error(status);
@@ -374,6 +413,7 @@
 	        return React.createElement(
 	            'div',
 	            null,
+	            React.createElement(AlertDismissable, { message: this.state.alert_message }),
 	            React.createElement(
 	                ReactDropzone,
 	                { onDrop: this.onDrop, multiple: false, className: 'dropzone', accept: 'image/jpeg, image/png, image/svg+xml' },
