@@ -1,4 +1,5 @@
 import os
+import re
 import imghdr
 import string
 import random
@@ -11,6 +12,9 @@ INPUT_DIR = os.sep.join([PATH_TO_PROJECT, 'engine/in'])
 OUTPUT_DIR = os.sep.join([PATH_TO_PROJECT, 'engine/out'])
 TMP_DIR = '/tmp'
 ALLOWED_IMAGE_FILE_FORMATS = ['png', 'jpeg']
+
+SVG_WIDTH_IN_PT = 384 # 384pt = 480px
+SVG_WIDTH_IN_PX = 480 # 384pt = 480px
 
 OPTIONS = {
     ##'turnpolicy': ['black', 'white', 'right', 'left', 'minority', 'majority', 'random'],
@@ -67,6 +71,105 @@ def to_pnm(in_full_path, out_full_path=None):
         out_full_path = root + '_pnm.pnm'
     os.system("convert %s %s" % (in_full_path, out_full_path))
     return out_full_path
+
+
+def parse_length(value, def_units='px'):
+    """Parses value as SVG length and returns it in pixels, or a negative scale (-1 = 100%)."""
+
+    if not value:
+        return 0.0
+
+    parts = re.match(r'^\s*(-?\d+(?:\.\d+)?)\s*(px|in|cm|mm|pt|pc|%)?', value)
+    if not parts:
+        raise Exception('Unknown length format: "{}"'.format(value))
+
+    num = float(parts.group(1))
+
+    units = parts.group(2) or def_units
+
+    if units == 'px':
+        return num
+    elif units == 'pt':
+        return num * 1.25
+    elif units == 'pc':
+        return num * 15.0
+    elif units == 'in':
+        return num * 90.0
+    elif units == 'mm':
+        return num * 3.543307
+    elif units == 'cm':
+        return num * 35.43307
+    elif units == '%':
+        return -num / 100.0
+    else:
+        raise Exception('Unknown length units: {}'.format(units))
+
+
+def resize_svg(svg_content, new_width=SVG_WIDTH_IN_PX):
+    """Resize a svg"""
+    from xml.dom import minidom
+    from lxml import etree
+
+    svg = etree.fromstring(svg_content)
+
+    if 'width' not in svg.keys() or 'height' not in svg.keys():
+        raise Exception('SVG header must contain width and height attributes')
+
+    width = parse_length(svg.get('width'))
+    height = parse_length(svg.get('height'))
+
+    viewbox = re.split('[ ,\t]+', svg.get('viewBox', '').strip())
+
+    if len(viewbox) == 4:
+        for i in [0, 1, 2, 3]:
+            viewbox[i] = parse_length(viewbox[i])
+        if viewbox[2] * viewbox[3] <= 0.0:
+            viewbox = None
+    else:
+        viewbox = None
+
+    if width <= 0 or height <= 0:
+        if viewbox:
+            width = viewbox[2]
+            height = viewbox[3]
+        else:
+            raise Exception('SVG width and height should be in absolute units and non-zero')
+
+    if not viewbox:
+        viewbox = [0, 0, width, height]
+
+    twidth = new_width
+    theight = None
+
+    if twidth:
+        if twidth < 0:
+            twidth = -width * twidth
+
+    if not theight:
+        theight = twidth / width * height
+
+    # set svg width and height, update viewport for margin
+    svg.set('width', '{}px'.format(twidth))
+    svg.set('height', '{}px'.format(theight))
+
+    offsetx = 0
+    offsety = 0
+
+    if twidth / theight > viewbox[2] / viewbox[3]:
+        # target page is wider than source image
+        page_width = viewbox[3] / theight * twidth
+        offsetx = (page_width - viewbox[2]) / 2
+        page_height = viewbox[3]
+    else:
+        page_width = viewbox[2]
+        page_height = viewbox[2] / twidth * theight
+        offsety = (page_height - viewbox[3]) / 2
+
+    vb_margin = page_width / twidth
+
+    svg.set('viewBox', '{} {} {} {}'.format(viewbox[0] - vb_margin - offsetx, viewbox[1] - vb_margin - offsety, page_width + vb_margin * 2, page_height + vb_margin * 2))
+
+    return etree.tostring(svg)
 
 
 def to_svg(in_full_path, algorithm_options=''):
@@ -149,4 +252,8 @@ def send_files_to_processor():
 
         #remove_intermediates()
 
-send_files_to_processor()
+def main():
+    send_files_to_processor()
+
+if __name__ == '__main__':
+    main()
