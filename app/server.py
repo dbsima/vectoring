@@ -1,6 +1,12 @@
 import os
+import sys
+
+sys.path.append(os.path.expanduser('~/vectoring/'))
+
 from flask import Flask, request, jsonify    
 from werkzeug.utils import secure_filename
+
+from engine import compute
 
 app = Flask(__name__, static_url_path='', static_folder='public')
 app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
@@ -37,12 +43,13 @@ def upload_file():
             
             if file.mimetype == 'image/svg+xml':
                 # No need to SVG, just sent it.
-                content = file.read()
-                content = content.replace('\n', ' ')
+                svg_content = file.read()
+                new_svg_content = compute.resize_svg(svg_content)
+
                 return jsonify(
                     success = True,
                     message = 'File computed.',
-                    data = content
+                    data = new_svg_content
                 )
 
         return jsonify(
