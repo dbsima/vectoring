@@ -46,5 +46,6 @@ https://github.com/okonet/react-dropzone
 
 ## SVG
 https://www.w3.org/TR/SVG/paths.html
+http://lxml.de/performance.html
 
 
